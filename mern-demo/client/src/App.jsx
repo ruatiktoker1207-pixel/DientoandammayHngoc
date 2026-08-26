@@ -8,6 +8,9 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
+  // ID của sinh viên đang sửa
+  const [editingId, setEditingId] = useState(null);
+
   // Lấy danh sách sinh viên từ Backend
   const fetchStudents = () => {
     fetch("/api/students")
@@ -25,7 +28,15 @@ function App() {
     fetchStudents();
   }, []);
 
-  // Xử lý thêm sinh viên
+  // Xóa dữ liệu trong form
+  const resetForm = () => {
+    setStudentId("");
+    setName("");
+    setEmail("");
+    setEditingId(null);
+  };
+
+  // Xử lý thêm hoặc cập nhật sinh viên
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -35,7 +46,43 @@ function App() {
       return;
     }
 
-    // Gửi POST đến Backend
+    // Nếu đang sửa thì dùng PUT
+    if (editingId) {
+      fetch(`/api/students/${editingId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentId: studentId,
+          name: name,
+          email: email,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Không thể cập nhật sinh viên");
+          }
+
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Sinh viên đã cập nhật:", data);
+
+          alert("Cập nhật sinh viên thành công!");
+
+          resetForm();
+          fetchStudents();
+        })
+        .catch((error) => {
+          console.error("Lỗi khi cập nhật sinh viên:", error);
+          alert("Có lỗi xảy ra khi cập nhật sinh viên!");
+        });
+
+      return;
+    }
+
+    // Nếu không sửa thì dùng POST để thêm
     fetch("/api/students", {
       method: "POST",
       headers: {
@@ -59,12 +106,7 @@ function App() {
 
         alert("Thêm sinh viên thành công!");
 
-        // Xóa dữ liệu trong form
-        setStudentId("");
-        setName("");
-        setEmail("");
-
-        // Tải lại danh sách sinh viên
+        resetForm();
         fetchStudents();
       })
       .catch((error) => {
@@ -73,12 +115,56 @@ function App() {
       });
   };
 
+  // Chọn sinh viên để sửa
+  const handleEdit = (student) => {
+    setEditingId(student._id);
+
+    setStudentId(student.studentId);
+    setName(student.name);
+    setEmail(student.email);
+  };
+
+  // Xóa sinh viên
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa sinh viên này không?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    fetch(`/api/students/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Không thể xóa sinh viên");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Sinh viên đã xóa:", data);
+
+        alert("Xóa sinh viên thành công!");
+
+        fetchStudents();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa sinh viên:", error);
+        alert("Có lỗi xảy ra khi xóa sinh viên!");
+      });
+  };
+
   return (
     <div>
       <h1>Quản lý sinh viên</h1>
 
-      {/* FORM THÊM SINH VIÊN */}
-      <h2>Thêm sinh viên</h2>
+      {/* FORM THÊM / CẬP NHẬT SINH VIÊN */}
+      <h2>
+        {editingId ? "Cập nhật sinh viên" : "Thêm sinh viên"}
+      </h2>
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -121,8 +207,18 @@ function App() {
         <br />
 
         <button type="submit">
-          Thêm sinh viên
+          {editingId ? "Cập nhật sinh viên" : "Thêm sinh viên"}
         </button>
+
+        {editingId && (
+          <button
+            type="button"
+            onClick={resetForm}
+            style={{ marginLeft: "10px" }}
+          >
+            Hủy
+          </button>
+        )}
       </form>
 
       <hr />
@@ -137,6 +233,22 @@ function App() {
           {students.map((student) => (
             <li key={student._id}>
               {student.studentId} - {student.name} - {student.email}
+
+              <button
+                type="button"
+                onClick={() => handleEdit(student)}
+                style={{ marginLeft: "10px" }}
+              >
+                Sửa
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDelete(student._id)}
+                style={{ marginLeft: "5px" }}
+              >
+                Xóa
+              </button>
             </li>
           ))}
         </ul>
