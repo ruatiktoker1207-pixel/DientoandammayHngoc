@@ -13,7 +13,7 @@ function App() {
 
   // Lấy danh sách sinh viên từ Backend
   const fetchStudents = () => {
-    fetch("/api/students")
+    fetch("http://localhost:5000/api/students")
       .then((response) => response.json())
       .then((data) => {
         setStudents(data);
@@ -48,7 +48,7 @@ function App() {
 
     // Nếu đang sửa thì dùng PUT
     if (editingId) {
-      fetch(`/api/students/${editingId}`, {
+      fetch(`http://localhost:5000/api/students/${editingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function App() {
     }
 
     // Nếu không sửa thì dùng POST để thêm
-    fetch("/api/students", {
+    fetch("http://localhost:5000/api/students", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -134,7 +134,7 @@ function App() {
       return;
     }
 
-    fetch(`/api/students/${id}`, {
+    fetch(`http://localhost:5000/api/students/${id}`, {
       method: "DELETE",
     })
       .then((response) => {
