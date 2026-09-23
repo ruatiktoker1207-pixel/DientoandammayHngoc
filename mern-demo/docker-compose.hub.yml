@@ -1,0 +1,19 @@
+services:
+  backend:
+    image: hoaingocadmin/mern-backend:1.0
+    container_name: mern-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb+srv://db_hoaingoc:12345@cluster0.wdxbw8d.mongodb.net/cloud_lab
+    restart: unless-stopped
+
+  frontend:
+    image: hoaingocadmin/mern-frontend:2.0
+    container_name: mern-frontend
+    ports:
+      - "3000:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped

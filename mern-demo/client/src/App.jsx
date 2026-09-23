@@ -13,7 +13,7 @@ function App() {
 
   // Lấy danh sách sinh viên từ Backend
   const fetchStudents = () => {
-    fetch("http://localhost:5000/api/students")
+    fetch("https://miniature-space-computing-4j57xq4x664qc7x4v-5000.app.github.dev/api/students")
       .then((response) => response.json())
       .then((data) => {
         setStudents(data);
@@ -48,7 +48,7 @@ function App() {
 
     // Nếu đang sửa thì dùng PUT
     if (editingId) {
-      fetch(`http://localhost:5000/api/students/${editingId}`, {
+      fetch(`https://miniature-space-computing-4j57xq4x664qc7x4v-5000.app.github.dev/api/students/${editingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function App() {
     }
 
     // Nếu không sửa thì dùng POST để thêm
-    fetch("http://localhost:5000/api/students", {
+    fetch("https://miniature-space-computing-4j57xq4x664qc7x4v-5000.app.github.dev/api/students", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -134,7 +134,7 @@ function App() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/students/${id}`, {
+    fetch(`https://miniature-space-computing-4j57xq4x664qc7x4v-5000.app.github.dev/api/students/${id}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -159,7 +159,7 @@ function App() {
 
   return (
     <div>
-      <h1>Quản lý sinh viên</h1>
+      <h1>Quản lý sinh viên - Phiên bản 2.0</h1>
 
       {/* FORM THÊM / CẬP NHẬT SINH VIÊN */}
       <h2>
